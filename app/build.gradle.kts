@@ -51,6 +51,9 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+
     implementation(Compose.compiler)
     implementation(Compose.ui)
     implementation(Compose.uiToolingPreview)
