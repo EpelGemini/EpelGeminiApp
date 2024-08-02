@@ -80,7 +80,7 @@ class ChatViewModel : ViewModel() {
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
         apiKey = getGeminiKey(),
-        systemInstruction = content { text("You are a mental health support system. Don't use markdown. Respond in user's input language. Use a casual style like talking with a friend.") },
+        systemInstruction = content { text("You are a mental health support system. NEVER use markdown in your response, juat plaintext!. When you need to use bullet points use • not *. Never use bold (**) in your response. Respond in user's input language. Use a casual style like talking with a friend.") },
     )
     private val chat = generativeModel.startChat()
 
