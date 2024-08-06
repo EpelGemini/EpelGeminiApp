@@ -43,9 +43,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.epelgemini.journal_domain.use_cases.JournalUseCases
 import com.epelgemini.report_domain.use_cases.ReportUseCases
 import com.epelgemini.report_presentation.converters.UriToFileConverter
@@ -57,7 +57,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -145,7 +144,7 @@ class ChatViewModel @Inject constructor(
 }
 
 @Composable
-fun ChatView(viewModel: ChatViewModel = viewModel()) {
+fun ChatView(viewModel: ChatViewModel = hiltViewModel()) {
     val messages by viewModel.messages.collectAsState()
     val isGenerating by viewModel.isGenerating.collectAsState()
     val listState = rememberLazyListState()
@@ -155,7 +154,7 @@ fun ChatView(viewModel: ChatViewModel = viewModel()) {
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        ChatTopAppBar()
+        //ChatTopAppBar()
 
         LazyColumn(
             state = listState,
