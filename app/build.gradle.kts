@@ -126,6 +126,9 @@ dependencies {
 
     implementation(project(Modules.core))
     implementation(project(Modules.coreUi))
+    implementation(project(Modules.journalData))
+    implementation(project(Modules.journalDomain))
+    implementation(project(Modules.journalPresentation))
 
     testImplementation(Testing.junit4)
     testImplementation(Testing.junitAndroidExt)

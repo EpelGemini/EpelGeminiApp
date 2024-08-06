@@ -46,14 +46,18 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.epelgemini.journal_domain.use_cases.JournalUseCases
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.GenerateContentResponse
 import com.google.ai.client.generativeai.type.content
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import javax.inject.Inject
 
 fun getGeminiKey(): String {
     val encodedKey = "QUl6YVN5Q2lFYzJNTmw3ZUE1ZVRTNVlqSzd6aEhVaTE2YVRJY3RV"
@@ -70,7 +74,10 @@ val BackgroundGray = Color(0xFFF5F5F5)  // Light gray for background
 val TextPrimary = Color(0xFF212121)  // Dark gray for primary text
 val TextSecondary = Color(0xFF757575)  // Medium gray for secondary text
 
-class ChatViewModel : ViewModel() {
+@HiltViewModel
+class ChatViewModel @Inject constructor(
+    private val journalUseCases: JournalUseCases
+) : ViewModel() {
     private val _messages = MutableStateFlow(listOf<Message>())
     val messages: StateFlow<List<Message>> = _messages.asStateFlow()
 
@@ -86,6 +93,14 @@ class ChatViewModel : ViewModel() {
 
     init {
         sendMessage("Hi! How can I help you today?", false)
+
+        viewModelScope.launch {
+            journalUseCases.getJournals()
+                .collect { journals ->
+                    Timber.d(journals.toString())
+                    Timber.d("Journals")
+                }
+        }
     }
 
     fun sendMessage(content: String, isFromUser: Boolean = true) {

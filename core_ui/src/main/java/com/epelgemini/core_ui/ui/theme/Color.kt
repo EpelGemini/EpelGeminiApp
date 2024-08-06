@@ -1,4 +1,4 @@
-package com.epelgemini.epelgeminiapp.ui.theme
+package com.epelgemini.core_ui.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
