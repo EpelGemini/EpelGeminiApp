@@ -7,21 +7,34 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 
 fun Journal.toJournalAndWritingsEntity(): Pair<JournalEntity, List<WritingEntity>> {
-    val journalEntity = JournalEntity(
-        journalId = id,
+    var journalEntity = JournalEntity(
         title = title,
         timestamp = date
             .toInstant(TimeZone.currentSystemDefault())
             .toEpochMilliseconds()
     )
+
+    id?.let { id ->
+        journalEntity = journalEntity.copy(
+            journalId = id
+        )
+    }
+
     val writingEntities = writings.map { writing ->
-        WritingEntity(
-            writingId = writing.id,
-            journalId = id,
+        var writingEntity = WritingEntity(
+            journalId = journalEntity.journalId,
             prompt = writing.prompt,
             feeling = writing.feeling,
             content = writing.content
         )
+
+        writing.id?.let { id ->
+            writingEntity = writingEntity.copy(
+                writingId = id
+            )
+        }
+
+        writingEntity
     }
 
     return Pair(journalEntity, writingEntities)

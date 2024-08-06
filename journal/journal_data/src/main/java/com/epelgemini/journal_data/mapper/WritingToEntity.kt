@@ -6,11 +6,19 @@ import com.epelgemini.journal_domain.model.Journal
 fun Journal.Writing.toEntity(
     journalId: String
 ): WritingEntity {
-    return WritingEntity(
-        writingId = id,
+    var entity = WritingEntity(
         journalId = journalId,
         prompt = prompt,
         feeling = feeling,
         content = content
     )
+
+    id?.let { id ->
+        entity = entity
+            .copy(
+                writingId = id
+            )
+    }
+
+    return entity
 }

@@ -103,6 +103,8 @@ dependencies {
     implementation(Google.playServicesMaps)
     implementation(Google.playServicesLocation)
 
+    implementation(Serialization.serialization)
+
     implementation(Ktor.ktorClientCore)
     implementation(Ktor.ktorClientAndroid)
     implementation(Ktor.ktorSerialization)
@@ -129,6 +131,9 @@ dependencies {
     implementation(project(Modules.journalData))
     implementation(project(Modules.journalDomain))
     implementation(project(Modules.journalPresentation))
+    implementation(project(Modules.reportData))
+    implementation(project(Modules.reportDomain))
+    implementation(project(Modules.reportPresentation))
 
     testImplementation(Testing.junit4)
     testImplementation(Testing.junitAndroidExt)

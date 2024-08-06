@@ -47,6 +47,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.epelgemini.journal_domain.use_cases.JournalUseCases
+import com.epelgemini.report_domain.use_cases.ReportUseCases
+import com.epelgemini.report_presentation.converters.UriToFileConverter
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.GenerateContentResponse
 import com.google.ai.client.generativeai.type.content
@@ -55,6 +57,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -76,7 +79,9 @@ val TextSecondary = Color(0xFF757575)  // Medium gray for secondary text
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    private val journalUseCases: JournalUseCases
+    private val journalUseCases: JournalUseCases,
+    private val reportUseCases: ReportUseCases,
+    private val uriToFileConverter: UriToFileConverter
 ) : ViewModel() {
     private val _messages = MutableStateFlow(listOf<Message>())
     val messages: StateFlow<List<Message>> = _messages.asStateFlow()
@@ -100,6 +105,19 @@ class ChatViewModel @Inject constructor(
                     Timber.d(journals.toString())
                     Timber.d("Journals")
                 }
+        }
+
+        viewModelScope.launch {
+            reportUseCases
+                .getReports()
+                .collect { reports ->
+                    Timber.d(reports.toString())
+                    Timber.d("Reports")
+                }
+        }
+
+        viewModelScope.launch {
+            uriToFileConverter.convert(emptyList())
         }
     }
 

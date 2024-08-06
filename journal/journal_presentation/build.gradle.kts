@@ -19,6 +19,7 @@ dependencies {
 
     "implementation"(project(Modules.core))
     "implementation"(project(Modules.coreUi))
+    "implementation"(project(Modules.journalDomain))
 
     "implementation"(Coil.coilCompose)
     "implementation"(Accompanist.viewPager)

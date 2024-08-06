@@ -1,7 +1,7 @@
 package com.epelgemini.journal_domain.use_cases
 
 import com.epelgemini.journal_domain.model.Journal
-import com.epelgemini.journal_domain.model.ValidationException
+import com.epelgemini.core.utils.ValidationException
 import com.epelgemini.journal_domain.repository.JournalRepository
 import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject

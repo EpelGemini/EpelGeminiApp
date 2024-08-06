@@ -1,3 +1,3 @@
-package com.epelgemini.journal_domain.model
+package com.epelgemini.core.utils
 
 class ValidationException(message:String): Exception(message)
