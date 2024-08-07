@@ -47,13 +47,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.BlockThreshold
 import com.google.ai.client.generativeai.type.GenerateContentResponse
+import com.google.ai.client.generativeai.type.HarmCategory
+import com.google.ai.client.generativeai.type.SafetySetting
 import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 fun getGeminiKey(): String {
     val encodedKey = "QUl6YVN5Q2lFYzJNTmw3ZUE1ZVRTNVlqSzd6aEhVaTE2YVRJY3RV"
@@ -61,7 +67,7 @@ fun getGeminiKey(): String {
     return String(decodedBytes, Charsets.UTF_8)
 }
 
-data class Message(val content: String, val isFromUser: Boolean)
+data class Message(val content: String, val isFromUser: Boolean, val timestamp: Date = Date())
 
 val PrimaryBlue = Color(0xFF1E88E5)  // A slightly darker blue
 val LightBlue = Color(0xFFE3F2FD)    // A very light blue for contrast
@@ -77,10 +83,30 @@ class ChatViewModel : ViewModel() {
     private val _isGenerating = MutableStateFlow(false)
     val isGenerating: StateFlow<Boolean> = _isGenerating.asStateFlow()
 
+    private val safetySettings = listOf(
+        SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.NONE),
+        SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.NONE),
+        SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.NONE),
+        SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.NONE),
+//        SafetySetting(HarmCategory.UNKNOWN, BlockThreshold.NONE),
+    )
+
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
         apiKey = getGeminiKey(),
-        systemInstruction = content { text("You are a mental health support system. NEVER use markdown in your response, juat plaintext!. When you need to use bullet points use • not *. Never use bold (**) in your response. Respond in user's input language. Use a casual style like talking with a friend.") },
+        safetySettings = safetySettings,
+        systemInstruction = content { text(
+            "You are a mental health support system. " +
+            "Most of your users are a victim of sexual harrasment." +
+            "NEVER use markdown in your response, juat plaintext!. " +
+            "When you need to use bullet points use • not *. " +
+            "Never use bold (**) in your response. " +
+            "Respond in user's input language. " +
+            "Use a casual talking style like talking with a friend, so the user will be comfortable, " +
+            "and highly empathetic." +
+            "IMPORTANT: For sexual harassment victims," +
+            "you MUST offer to assist user write a sexual harassment report to authorities."
+        ) },
     )
     private val chat = generativeModel.startChat()
 
@@ -164,7 +190,7 @@ fun ChatTopAppBar() {
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Curhat AI", color = Color.White, fontWeight = FontWeight.Bold)
+                Text("Safey", color = Color.White, fontWeight = FontWeight.Bold)
             }
         },
         backgroundColor = DarkBlue,
@@ -183,6 +209,10 @@ fun MessageBubble(message: Message) {
         bottomStart = if (message.isFromUser) 16.dp else 0.dp,
         bottomEnd = if (message.isFromUser) 0.dp else 16.dp
     )
+
+    // Format the timestamp
+    val timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val formattedTime = timeFormatter.format(message.timestamp)
 
     Box(
         modifier = Modifier
@@ -204,7 +234,7 @@ fun MessageBubble(message: Message) {
                 )
             }
             Text(
-                text = "Just now", // Replace with actual timestamp
+                text = formattedTime,
                 color = TextSecondary,
                 fontSize = 12.sp,
                 modifier = Modifier.padding(top = 4.dp, start = 4.dp, end = 4.dp)
@@ -231,7 +261,7 @@ fun TypingIndicator() {
         modifier = Modifier.padding(vertical = 4.dp)
     ) {
         Text(
-            text = "Curhat AI is typing" + ".".repeat(dotsCount),
+            text = "Safey AI is typing" + ".".repeat(dotsCount),
             modifier = Modifier.padding(12.dp),
             color = TextPrimary,
             fontSize = 16.sp
