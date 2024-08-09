@@ -4,12 +4,14 @@ import android.util.Base64
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,15 +20,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -69,12 +74,16 @@ fun getGeminiKey(): String {
 
 data class Message(val content: String, val isFromUser: Boolean, val timestamp: Date = Date())
 
+val PrimaryPurple = Color(0xFF5C6BC0)
+val LightPink = Color(0xFFFCE4EC)
+val DarkPink = Color(0xFFEC407A)
 val PrimaryBlue = Color(0xFF1E88E5)  // A slightly darker blue
 val LightBlue = Color(0xFFE3F2FD)    // A very light blue for contrast
 val DarkBlue = Color(0xFF1565C0)     // A deeper blue for accents
 val BackgroundGray = Color(0xFFF5F5F5)  // Light gray for background
 val TextPrimary = Color(0xFF212121)  // Dark gray for primary text
 val TextSecondary = Color(0xFF757575)  // Medium gray for secondary text
+val BackgroundWhite = Color.White
 
 class ChatViewModel : ViewModel() {
     private val _messages = MutableStateFlow(listOf<Message>())
@@ -136,7 +145,6 @@ class ChatViewModel : ViewModel() {
         _messages.value += Message(resultText.trim(), false)
     }
 }
-
 @Composable
 fun ChatView(viewModel: ChatViewModel = viewModel()) {
     val messages by viewModel.messages.collectAsState()
@@ -147,7 +155,7 @@ fun ChatView(viewModel: ChatViewModel = viewModel()) {
         listState.animateScrollToItem(messages.size - 1)
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().background(BackgroundWhite)) {
         ChatTopAppBar()
 
         LazyColumn(
@@ -182,63 +190,101 @@ fun ChatView(viewModel: ChatViewModel = viewModel()) {
 fun ChatTopAppBar() {
     TopAppBar(
         title = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Chat,
-                    contentDescription = "Chat icon",
-                    tint = Color.White,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Safey", color = Color.White, fontWeight = FontWeight.Bold)
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(Color.White)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Safey", color = Color.White, fontWeight = FontWeight.Bold)
+                }
             }
         },
-        backgroundColor = DarkBlue,
-        elevation = 4.dp
+        navigationIcon = {
+            IconButton(onClick = { /* TODO: Implement menu action */ }) {
+                Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
+            }
+        },
+        backgroundColor = PrimaryPurple,
+        elevation = 0.dp
     )
 }
 
 @Composable
 fun MessageBubble(message: Message) {
-    val bubbleColor = if (message.isFromUser) PrimaryBlue else LightBlue
-    val textColor = if (message.isFromUser) Color.White else TextPrimary
+    val bubbleColor = if (message.isFromUser) Color.LightGray else LightPink
+    val textColor = TextPrimary
     val alignment = if (message.isFromUser) Alignment.CenterEnd else Alignment.CenterStart
-    val bubbleShape = RoundedCornerShape(
-        topStart = 16.dp,
-        topEnd = 16.dp,
-        bottomStart = if (message.isFromUser) 16.dp else 0.dp,
-        bottomEnd = if (message.isFromUser) 0.dp else 16.dp
-    )
+    val bubbleShape = RoundedCornerShape(16.dp)
 
-    // Format the timestamp
     val timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
     val formattedTime = timeFormatter.format(message.timestamp)
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        contentAlignment = alignment
+        horizontalAlignment = if (message.isFromUser) Alignment.End else Alignment.Start
     ) {
-        Column(horizontalAlignment = if (message.isFromUser) Alignment.End else Alignment.Start) {
-            Surface(
-                color = bubbleColor,
-                shape = bubbleShape,
-                elevation = 1.dp
-            ) {
+
+        Box(contentAlignment = alignment) {
+            Column {
+                Surface(
+                    color = bubbleColor,
+                    shape = bubbleShape,
+                    elevation = 1.dp
+                ) {
+                    Text(
+                        text = message.content,
+                        modifier = Modifier.padding(12.dp),
+                        color = textColor,
+                        fontSize = 16.sp
+                    )
+                }
                 Text(
-                    text = message.content,
-                    modifier = Modifier.padding(12.dp),
-                    color = textColor,
-                    fontSize = 16.sp
+                    text = formattedTime,
+                    color = TextSecondary,
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(top = 4.dp, start = 4.dp, end = 4.dp)
                 )
             }
-            Text(
-                text = formattedTime,
-                color = TextSecondary,
-                fontSize = 12.sp,
-                modifier = Modifier.padding(top = 4.dp, start = 4.dp, end = 4.dp)
-            )
+        }
+        if (message.content == "AI izin lapor") {
+            AIPermissionButtons()
+        }
+    }
+}
+
+@Composable
+fun AIPermissionButtons() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Button(
+            onClick = { /* TODO: Implement permission action */ },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(backgroundColor = DarkPink)
+        ) {
+            Text("Izinkan", color = Color.White)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedButton(
+            onClick = { /* TODO: Implement decline action */ },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = DarkPink)
+        ) {
+            Text("Tidak")
         }
     }
 }
@@ -255,7 +301,7 @@ fun TypingIndicator() {
     }
 
     Surface(
-        color = LightBlue,
+        color = Color.LightGray,
         shape = RoundedCornerShape(16.dp),
         elevation = 1.dp,
         modifier = Modifier.padding(vertical = 4.dp)
@@ -275,7 +321,7 @@ fun ChatInputField(onSendMessage: (String) -> Unit, isGenerating: Boolean) {
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = Color.White,
+        color = PrimaryPurple,
         elevation = 8.dp
     ) {
         Row(
@@ -290,9 +336,9 @@ fun ChatInputField(onSendMessage: (String) -> Unit, isGenerating: Boolean) {
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(24.dp)),
-                placeholder = { Text("Type a message...", color = TextSecondary) },
+                placeholder = { Text("What do you want to tell me?", color = Color.LightGray) },
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = BackgroundGray,
+                    backgroundColor = Color.White,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     textColor = TextPrimary
@@ -310,18 +356,20 @@ fun ChatInputField(onSendMessage: (String) -> Unit, isGenerating: Boolean) {
                 },
                 modifier = Modifier
                     .size(48.dp)
-                    .clip(CircleShape),
+                    .clip(CircleShape)
+                    .background(DarkPink),
                 enabled = !isGenerating && text.isNotBlank()
             ) {
                 Icon(
                     imageVector = Icons.Default.Send,
                     contentDescription = "Send message",
-                    tint = if (!isGenerating && text.isNotBlank()) PrimaryBlue else TextSecondary
+                    tint = Color.White
                 )
             }
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
