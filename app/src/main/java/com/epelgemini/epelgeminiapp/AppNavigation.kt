@@ -95,7 +95,11 @@ private fun NavHostController(
         }
 
         composable(TopLevelDestination.ReportList.name) {
-            Text(text = "Report List")
+            ListLaporan(navController = navController)
+        }
+
+        composable("report_case_route") {
+            reportCase()
         }
     }
 }
