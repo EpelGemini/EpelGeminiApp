@@ -227,7 +227,8 @@ fun ChatView(viewModel: ChatViewModel = hiltViewModel()) {
     Column(modifier = Modifier
         .fillMaxSize()
         .background(BackgroundWhite)) {
-        ChatTopAppBar()
+
+        // ChatTopAppBar()
 
         LazyColumn(
             state = listState,
