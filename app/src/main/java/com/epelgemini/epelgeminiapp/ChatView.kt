@@ -4,17 +4,21 @@ import android.util.Base64
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -34,7 +38,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +50,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,6 +65,7 @@ import com.google.ai.client.generativeai.type.GenerateContentResponse
 import com.google.ai.client.generativeai.type.HarmCategory
 import com.google.ai.client.generativeai.type.SafetySetting
 import com.google.ai.client.generativeai.type.content
+import com.google.ai.client.generativeai.type.generationConfig
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -75,8 +84,9 @@ fun getGeminiKey(): String {
 data class Message(val content: String, val isFromUser: Boolean, val timestamp: Date = Date())
 
 val PrimaryPurple = Color(0xFF5C6BC0)
-val LightPink = Color(0xFFFCE4EC)
-val DarkPink = Color(0xFFEC407A)
+val LightPink = Color(0xFFF9E7E5)
+val DarkPink = Color(0xFFF47A7A)
+val LightGray = Color(0xFFE5E5E5)
 val PrimaryBlue = Color(0xFF1E88E5)  // A slightly darker blue
 val LightBlue = Color(0xFFE3F2FD)    // A very light blue for contrast
 val DarkBlue = Color(0xFF1565C0)     // A deeper blue for accents
@@ -84,6 +94,34 @@ val BackgroundGray = Color(0xFFF5F5F5)  // Light gray for background
 val TextPrimary = Color(0xFF212121)  // Dark gray for primary text
 val TextSecondary = Color(0xFF757575)  // Medium gray for secondary text
 val BackgroundWhite = Color.White
+
+// Define the system instruction as a separate constant
+val SYSTEM_INSTRUCTION = """
+You are an empathetic mental health support system for offense victims, such as rape, sexual harassment, physical offense, bullying, and other types of offense.
+
+Key Guidelines:
+• Use a casual, friendly tone as if you're the user's closest friend.
+• Keep responses short and concise, because you're talking to user through SMS.
+• Be highly empathetic and supportive.
+• Respond in user's input language (English or Indonesian).
+• Use "•" for bullet points, not "*".
+• No markdown or bold text.
+
+Important:
+• Offer to write a sexual harassment report when you have enough information.
+• If not offered earlier, ALWAYS offer to write a report on the 10th message.
+• Your 10th message, which asks user to write report, must ALWAYS include "<REPORT>" at the end of your text.
+• Be careful not to overwhelm the user.
+
+Response Guidelines:
+• NEVER use markdown in your response, just plaintext!
+• NEVER use bold (**) in your response.
+• When you need to use bullet points use • not *.
+• Respond in user's input language (English or Indonesian).
+
+Remember: Your goal is to provide comforting, concise support and empower users to take action when ready, and offer to write report at 10th message with "<REPORT>".
+""".trimIndent()
+
 
 class ChatViewModel : ViewModel() {
     private val _messages = MutableStateFlow(listOf<Message>())
@@ -97,25 +135,20 @@ class ChatViewModel : ViewModel() {
         SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.NONE),
         SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.NONE),
         SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.NONE),
-//        SafetySetting(HarmCategory.UNKNOWN, BlockThreshold.NONE),
     )
 
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
         apiKey = getGeminiKey(),
         safetySettings = safetySettings,
-        systemInstruction = content { text(
-            "You are a mental health support system. " +
-            "Most of your users are a victim of sexual harrasment." +
-            "NEVER use markdown in your response, juat plaintext!. " +
-            "When you need to use bullet points use • not *. " +
-            "Never use bold (**) in your response. " +
-            "Respond in user's input language. " +
-            "Use a casual talking style like talking with a friend, so the user will be comfortable, " +
-            "and highly empathetic." +
-            "IMPORTANT: For sexual harassment victims," +
-            "you MUST offer to assist user write a sexual harassment report to authorities."
-        ) },
+        systemInstruction = content { text(SYSTEM_INSTRUCTION) },
+        generationConfig = generationConfig {
+            temperature = 0.5f
+            topK = 32
+            topP = 0.95f
+            maxOutputTokens = 8192
+            responseMimeType = "text/plain"
+        },
     )
     private val chat = generativeModel.startChat()
 
@@ -145,17 +178,23 @@ class ChatViewModel : ViewModel() {
         _messages.value += Message(resultText.trim(), false)
     }
 }
+
 @Composable
 fun ChatView(viewModel: ChatViewModel = viewModel()) {
     val messages by viewModel.messages.collectAsState()
     val isGenerating by viewModel.isGenerating.collectAsState()
     val listState = rememberLazyListState()
+    val isKeyboardVisible by keyboardAsState()
 
-    LaunchedEffect(messages.size) {
-        listState.animateScrollToItem(messages.size - 1)
+    LaunchedEffect(messages.size, isKeyboardVisible) {
+        if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(messages.size - 1)
+        }
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(BackgroundWhite)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .background(BackgroundWhite)) {
         ChatTopAppBar()
 
         LazyColumn(
@@ -184,6 +223,12 @@ fun ChatView(viewModel: ChatViewModel = viewModel()) {
             isGenerating = isGenerating
         )
     }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            // Clean up any resources if needed
+        }
+    }
 }
 
 @Composable
@@ -198,6 +243,7 @@ fun ChatTopAppBar() {
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.align(Alignment.Center)
                 ) {
+
                     Box(
                         modifier = Modifier
                             .size(32.dp)
@@ -206,6 +252,8 @@ fun ChatTopAppBar() {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Safey", color = Color.White, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.width(48.dp))
+
                 }
             }
         },
@@ -218,10 +266,9 @@ fun ChatTopAppBar() {
         elevation = 0.dp
     )
 }
-
 @Composable
 fun MessageBubble(message: Message) {
-    val bubbleColor = if (message.isFromUser) Color.LightGray else LightPink
+    val bubbleColor = if (message.isFromUser) LightGray else LightPink
     val textColor = TextPrimary
     val alignment = if (message.isFromUser) Alignment.CenterEnd else Alignment.CenterStart
     val bubbleShape = RoundedCornerShape(16.dp)
@@ -235,13 +282,13 @@ fun MessageBubble(message: Message) {
             .padding(vertical = 4.dp),
         horizontalAlignment = if (message.isFromUser) Alignment.End else Alignment.Start
     ) {
-
         Box(contentAlignment = alignment) {
             Column {
                 Surface(
                     color = bubbleColor,
                     shape = bubbleShape,
-                    elevation = 1.dp
+                    elevation = 1.dp,
+                    modifier = Modifier.widthIn(max = LocalConfiguration.current.screenWidthDp.dp * 0.6f)
                 ) {
                     Text(
                         text = message.content,
@@ -258,33 +305,73 @@ fun MessageBubble(message: Message) {
                 )
             }
         }
-        if (message.content == "AI izin lapor") {
-            AIPermissionButtons()
+        if (!message.isFromUser && message.content.contains("<REPORT>")) {
+            Column(modifier = Modifier
+                .padding(top = 16.dp)
+            ){
+                AIPermissionButtons()
+            }
         }
     }
 }
 
 @Composable
 fun AIPermissionButtons() {
+
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .background(LightPink)
+            .padding(16.dp)
+            .widthIn(
+                max = LocalConfiguration.current.screenWidthDp.dp * 0.6f,
+                min = LocalConfiguration.current.screenWidthDp.dp * 0.6f
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+
     ) {
+        Text(
+            text = "AI izin lapor",
+            color = DarkPink,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
         Button(
             onClick = { /* TODO: Implement permission action */ },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(backgroundColor = DarkPink)
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .height(48.dp),
+            colors = ButtonDefaults.buttonColors(backgroundColor = DarkPink),
+            shape = RoundedCornerShape(24.dp)
         ) {
-            Text("Izinkan", color = Color.White)
+            Text(
+                "Izinkan",
+                color = Color.White,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium
+            )
         }
-        Spacer(modifier = Modifier.height(8.dp))
+
+        Spacer(modifier = Modifier.height(12.dp))
+
         OutlinedButton(
             onClick = { /* TODO: Implement decline action */ },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = DarkPink)
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .height(48.dp),
+            colors = ButtonDefaults.outlinedButtonColors(
+                backgroundColor = Color.White,
+                contentColor = DarkPink
+            ),
+            border = BorderStroke(1.dp, DarkPink),
+            shape = RoundedCornerShape(24.dp)
         ) {
-            Text("Tidak")
+            Text(
+                "Tidak",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }
@@ -301,7 +388,7 @@ fun TypingIndicator() {
     }
 
     Surface(
-        color = Color.LightGray,
+        color = LightPink,
         shape = RoundedCornerShape(16.dp),
         elevation = 1.dp,
         modifier = Modifier.padding(vertical = 4.dp)
@@ -369,7 +456,15 @@ fun ChatInputField(onSendMessage: (String) -> Unit, isGenerating: Boolean) {
         }
     }
 }
-
+@Composable
+fun keyboardAsState(): State<Boolean> {
+    val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    return remember {
+        mutableStateOf(isImeVisible)
+    }.apply {
+        value = isImeVisible
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
