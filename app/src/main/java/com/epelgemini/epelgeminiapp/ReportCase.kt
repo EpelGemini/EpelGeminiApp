@@ -46,7 +46,6 @@ fun  reportCase(){
     var redColorUse = Color(0xFFAF4646)
 
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
