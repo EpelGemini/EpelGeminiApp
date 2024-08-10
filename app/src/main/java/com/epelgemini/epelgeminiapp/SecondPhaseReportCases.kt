@@ -58,7 +58,7 @@ fun SecondPhaseReportCases() {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        ProgressBar(redColorUse, redLightColorUse)
+        ProgressBar(2,redColorUse, redLightColorUse)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -66,11 +66,15 @@ fun SecondPhaseReportCases() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        CustomTextField(value = name, onValueChange = { name = it }, label = "Nama Pelapor")
+        Text(text = "Nama Pelapor", fontSize = 16.sp, color = Color.Black)
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        CustomTextField(value = name, onValueChange = { name = it }, label = "Masukkan Nama Pelapor")
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Jenis Kelamin", fontSize = 18.sp, color = Color.Black)
+        Text(text = "Jenis Kelamin", fontSize = 16.sp, color = Color.Black)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -78,9 +82,17 @@ fun SecondPhaseReportCases() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        CustomTextField(value = noTelpOrEmail, onValueChange = { noTelpOrEmail = it }, label = "No Telp/Email")
+        Text(text = "No. Telepon/Alamat email", fontSize = 16.sp, color = Color.Black)
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        CustomTextField(value = noTelpOrEmail, onValueChange = { noTelpOrEmail = it }, label = "Masukkan No. Telepon/Alamat email")
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        Text(text = "Domisili", fontSize = 16.sp, color = Color.Black)
+
+        Spacer(modifier = Modifier.height(4.dp))
 
         ExposedDropdownMenuBox(
             expanded = expandedPelapor,
@@ -90,7 +102,7 @@ fun SecondPhaseReportCases() {
                 value = domisili,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Provinsi Domisili") },
+                label = { Text("Pilih Domisili") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedPelapor) },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -153,13 +165,17 @@ fun SecondPhaseReportCases() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        CustomTextField(value = namaTerduga, onValueChange = { namaTerduga = it }, label = "Nama Terduga Pelaku")
+        Text(text = "Nama Pelaku", fontSize = 16.sp, color = Color.Black)
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        CustomTextField(value = namaTerduga, onValueChange = { namaTerduga = it }, label = "Masukkan Nama Terduga Pelaku")
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Jenis Kelamin Pelaku", fontSize = 18.sp, color = Color.Black)
+        Text(text = "Jenis Kelamin Pelaku", fontSize = 16.sp, color = Color.Black)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         GenderSelection(
             selectedOption = { selectedGenderTerduga },
@@ -169,6 +185,9 @@ fun SecondPhaseReportCases() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        Text(text = "Domisili Terduga Pelaku", fontSize = 16.sp, color = Color.Black)
+
+        Spacer(modifier = Modifier.height(8.dp))
         ExposedDropdownMenuBox(
             expanded = expandedTerduga,
             onExpandedChange = { expandedTerduga = !expandedTerduga }
@@ -177,7 +196,7 @@ fun SecondPhaseReportCases() {
                 value = domisiliTerduga,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Domisili Terduga") },
+                label = { Text("Pilih Domisili Terduga") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTerduga) },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -209,31 +228,52 @@ fun SecondPhaseReportCases() {
         ActionButtons(redColorUse)
     }
 }
-
 @Composable
-fun ProgressBar(redColorUse: Color, redLightColorUse: Color) {
+fun ProgressBar(darkBoxCount: Int, redColorUse: Color, redLightColorUse: Color) {
+    // Ensure darkBoxCount is within the range of the number of boxes
+    val maxBoxes = 3
+    val adjustedDarkBoxCount = darkBoxCount.coerceIn(0, maxBoxes)
+
     Row(
         modifier = Modifier
             .padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Box(
-            modifier = Modifier
-                .size(121.dp, 12.dp)
-                .background(color = redColorUse, shape = RoundedCornerShape(12.dp))
-        )
-        Box(
-            modifier = Modifier
-                .size(121.dp, 12.dp)
-                .background(color = redColorUse, shape = RoundedCornerShape(12.dp))
-        )
-        Box(
-            modifier = Modifier
-                .size(121.dp, 12.dp)
-                .background(color = redLightColorUse, shape = RoundedCornerShape(12.dp))
-        )
+        repeat(maxBoxes) { index ->
+            val color = if (index < adjustedDarkBoxCount) redColorUse else redLightColorUse
+            Box(
+                modifier = Modifier
+                    .size(121.dp, 12.dp)
+                    .background(color = color, shape = RoundedCornerShape(12.dp))
+            )
+        }
     }
 }
+
+//@Composable
+//fun ProgressBar(redColorUse: Color, redLightColorUse: Color) {
+//    Row(
+//        modifier = Modifier
+//            .padding(vertical = 16.dp),
+//        horizontalArrangement = Arrangement.spacedBy(4.dp),
+//    ) {
+//        Box(
+//            modifier = Modifier
+//                .size(121.dp, 12.dp)
+//                .background(color = redColorUse, shape = RoundedCornerShape(12.dp))
+//        )
+//        Box(
+//            modifier = Modifier
+//                .size(121.dp, 12.dp)
+//                .background(color = redColorUse, shape = RoundedCornerShape(12.dp))
+//        )
+//        Box(
+//            modifier = Modifier
+//                .size(121.dp, 12.dp)
+//                .background(color = redLightColorUse, shape = RoundedCornerShape(12.dp))
+//        )
+//    }
+//}
 
 @Composable
 fun SectionHeader(text: String, color: Color = Color.Black) {
@@ -247,19 +287,46 @@ fun SectionHeader(text: String, color: Color = Color.Black) {
 
 @Composable
 fun CustomTextField(value: String, onValueChange: (String) -> Unit, label: String, enabled: Boolean = true) {
+//    TextField(
+//        value = value,
+//        onValueChange = onValueChange,
+//        label = { Text(label) },
+//        modifier = Modifier.fillMaxWidth(),
+//        enabled = enabled,
+//        colors = TextFieldDefaults.colors(
+//            focusedContainerColor = Color.LightGray,
+//            unfocusedContainerColor = Color.LightGray,
+//            disabledContainerColor = Color.LightGray,
+//            disabledTextColor = Color.Gray
+//        )
+//    )
     TextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label) },
-        modifier = Modifier.fillMaxWidth(),
+        placeholder = {
+            Text(
+                text =  label,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
+        textStyle = MaterialTheme.typography.bodyMedium.copy(lineHeight = 24.sp),
+        singleLine = true,
+        maxLines = 1,
         enabled = enabled,
         colors = TextFieldDefaults.colors(
+
             focusedContainerColor = Color.LightGray,
             unfocusedContainerColor = Color.LightGray,
             disabledContainerColor = Color.LightGray,
             disabledTextColor = Color.Gray
         )
+
     )
+
+
 }
 
 @Composable
@@ -331,7 +398,7 @@ fun DisabilityStatusSelection(
                     text = option,
                     fontWeight = FontWeight.Bold,
                     color = if (isDisabled == option) Color.White else Color.Black,
-                    fontSize = 16.sp
+                    fontSize = 14.sp
                 )
             }
         }

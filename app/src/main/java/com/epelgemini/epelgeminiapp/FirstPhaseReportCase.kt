@@ -42,27 +42,9 @@ fun FirstPhaseReportCase() {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .padding(vertical = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(121.dp, 12.dp)
-                    .background(color = redColorUse, shape = RoundedCornerShape(12.dp))
-            )
-            Box(
-                modifier = Modifier
-                    .size(121.dp, 12.dp)
-                    .background(color = redLightColorUse, shape = RoundedCornerShape(12.dp))
-            )
-            Box(
-                modifier = Modifier
-                    .size(121.dp, 12.dp)
-                    .background(color = redLightColorUse, shape = RoundedCornerShape(12.dp))
-            )
-        }
+
+        ProgressBar(1, redColorUse , redLightColorUse)
+
         Text(
             text = "Pilih Kategori",
             fontSize = 20.sp,
