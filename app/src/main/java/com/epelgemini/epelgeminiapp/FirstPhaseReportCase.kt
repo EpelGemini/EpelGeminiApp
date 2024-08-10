@@ -31,7 +31,7 @@ enum class ReportType(val id: Int, val title: String) {
 }
 
 @Composable
-fun firstPhaseReportCase() {
+fun FirstPhaseReportCase() {
     val selectedIndex = remember { mutableStateOf<ReportType?>(null) }
     val isButtonEnabled = selectedIndex.value != null
     val redColorUse = Color(0xFFAF4646)
@@ -157,5 +157,5 @@ fun ReportCardType(reportType: ReportType, isSelected: Boolean, onClick: () -> U
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    firstPhaseReportCase()
+    FirstPhaseReportCase()
 }
