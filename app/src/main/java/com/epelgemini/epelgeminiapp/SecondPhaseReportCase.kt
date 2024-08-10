@@ -2,6 +2,7 @@ package com.epelgemini.epelgeminiapp
 
 import android.widget.ToggleButton
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,9 +44,12 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun secondPhaseReportCase () {
     var name by remember { mutableStateOf("") }
-    var jenisKelamin by remember { mutableStateOf("Laki-Laki") }
     var noTelpOrEmail by remember { mutableStateOf("") }
     var domisili by remember { mutableStateOf("") }
+    var isTextFieldEnabled by remember { mutableStateOf(false) }
+    var disabilityExplanation by remember { mutableStateOf("") }
+    var isDisabled by remember { mutableStateOf<String?>(null) }
+
 
     val provinsiList = listOf(
         "Aceh", "Sumatera Utara", "Sumatera Barat", "Riau", "Kepulauan Riau", "Jambi",
@@ -58,9 +62,6 @@ fun secondPhaseReportCase () {
         "Maluku Utara", "Papua Barat", "Papua", "Papua Tengah", "Papua Pegunungan",
         "Papua Selatan", "Papua Barat Daya"
     )
-    var expanded by remember { mutableStateOf(false) }
-    val selectedIndex = remember { mutableStateOf<ReportType?>(null) }
-    val isButtonEnabled = selectedIndex.value != null
     val redColorUse = Color(0xFFAF4646)
     val redLightColorUse = Color(0xFFF2CBC6)
 
@@ -236,6 +237,70 @@ fun secondPhaseReportCase () {
                 unfocusedContainerColor = Color.LightGray,
             )
         )
+        Spacer(modifier = Modifier.height(18.dp))
+        Text(
+            text = "Status Disabilitas",
+            fontSize = 18.sp,
+            color = Color.Black
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            listOf("Iya", "Tidak").forEach { option ->
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(165.dp, 44.dp)
+                        .background(
+                            color = if (isDisabled == option) redColorUse else Color.LightGray,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .clickable {
+                            isDisabled = option
+                            isTextFieldEnabled = option == "Iya"
+                            if (option == "Tidak") disabilityExplanation = ""
+                        }
+                ) {
+                    Text(
+                        text = option,
+                        color = if (isDisabled == option) Color.White else Color.DarkGray,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        TextField(
+            value = disabilityExplanation,
+            onValueChange = { disabilityExplanation = it },
+            label = { Text("Penjelasan Status Disabilitas") },
+            enabled = isTextFieldEnabled,
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.LightGray,
+                unfocusedContainerColor = Color.LightGray,
+                disabledContainerColor = Color.LightGray,
+                disabledTextColor = Color.Gray
+            )
+        )
+        Spacer(modifier = Modifier.height(18.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(3.dp)
+                .background(Color.Black)
+        )
+
+
+
 
 
 
