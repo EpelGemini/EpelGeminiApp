@@ -113,13 +113,17 @@ fun ThirdPhaseReportCases(){
         Spacer(modifier = Modifier.height(20.dp))
 
 
+
         Text(text = "Bukti Video (Opsional)", fontSize = 16.sp, color = Color.Black)
 
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(text = "Durasi video maksimal 10 menit.", fontSize = 14.sp, color = Color.Red)
 
-        // Row function goes here to put image
+        // Row function goes here to put video
+        Spacer(modifier = Modifier.height(20.dp))
+
+        VideoPickerRow()
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -188,6 +192,7 @@ fun ImagePickerRow() {
     }
 }
 
+
 @Composable
 fun ImageBox(imageUri: Uri?, onClick: () -> Unit) {
 
@@ -227,6 +232,86 @@ fun ImageBox(imageUri: Uri?, onClick: () -> Unit) {
     }
 }
 
+@Composable
+fun VideoPickerRow() {
+    var selectedVideoUri1 by remember { mutableStateOf<Uri?>(null) }
+    var selectedVideoUri2 by remember { mutableStateOf<Uri?>(null) }
+    var selectedVideoUri3 by remember { mutableStateOf<Uri?>(null) }
+
+    val videoPickerLauncher1 = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri -> selectedVideoUri1 = uri }
+    )
+
+    val videoPickerLauncher2 = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri -> selectedVideoUri2 = uri }
+    )
+
+    val videoPickerLauncher3 = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri -> selectedVideoUri3 = uri }
+    )
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        VideoBox(selectedVideoUri1) { videoPickerLauncher1.launch(
+            PickVisualMediaRequest(
+                ActivityResultContracts.PickVisualMedia.VideoOnly)
+        ) }
+        VideoBox(selectedVideoUri2) { videoPickerLauncher2.launch(
+            PickVisualMediaRequest(
+                ActivityResultContracts.PickVisualMedia.VideoOnly)
+        ) }
+        VideoBox(selectedVideoUri3) { videoPickerLauncher3.launch(
+            PickVisualMediaRequest(
+                ActivityResultContracts.PickVisualMedia.VideoOnly)
+        ) }
+    }
+}
+@Composable
+fun VideoBox(videoUri: Uri?, onClick: () -> Unit) {
+
+    val image = painterResource(id = R.drawable.frame_175)
+
+
+    Box(
+        modifier = Modifier
+            .size(112.dp)
+            .background(Color.Transparent)
+            .let {
+                if (videoUri != null) it else it.background(Color.Transparent)
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        if (videoUri != null) {
+            AsyncImage(
+                model = videoUri,
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(112.dp)
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(112.dp)
+                    .clickable { onClick() }
+            ){
+                Image(
+                    painter = image,
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.size(112.dp)
+                )
+            }
+        }
+    }
+}
+
+
 
 @Composable
 fun ActionButtonInThirdPhase(redColorUse: Color, isChecked: Boolean) {
@@ -255,8 +340,6 @@ fun ActionButtonInThirdPhase(redColorUse: Color, isChecked: Boolean) {
         }
     }
 }
-
-
 
 @Preview(showBackground = true)
 @Composable
