@@ -20,12 +20,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -36,11 +40,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 
 @Composable
@@ -272,6 +281,7 @@ fun VideoPickerRow() {
         ) }
     }
 }
+
 @Composable
 fun VideoBox(videoUri: Uri?, onClick: () -> Unit) {
 
@@ -311,8 +321,6 @@ fun VideoBox(videoUri: Uri?, onClick: () -> Unit) {
     }
 }
 
-
-
 @Composable
 fun ActionButtonInThirdPhase(redColorUse: Color, isChecked: Boolean) {
     Column(
@@ -341,9 +349,85 @@ fun ActionButtonInThirdPhase(redColorUse: Color, isChecked: Boolean) {
     }
 }
 
+@Composable
+fun ConfirmationCart(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+
+) {
+    Dialog(onDismissRequest = { onDismissRequest() }) {
+        // Draw a rectangle shape with rounded corners inside the dialog
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(375.dp)
+                .padding(16.dp),
+            colors = CardDefaults.cardColors(Color.White),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.reportcase_logo),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .size(70.dp)
+                )
+//                Box(modifier = Modifier
+//                    .size(110.dp, 110.dp)
+//                    .background(Color.Red)){}
+                Text(
+                    text = "Buat Laporan?",
+                    modifier = Modifier.padding(8.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFAF4646)
+                )
+
+                Spacer(modifier = Modifier.size(1.dp))
+                Text(
+                    text = "Pastikan semua data yang kamu berikan  \n" +
+                            "sudah di isi dengan benar dan sesuai, ya",
+                    modifier = Modifier,
+                    textAlign = TextAlign.Center
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    TextButton(
+                        onClick = { onDismissRequest() },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text("Dismiss")
+                    }
+                    TextButton(
+                        onClick = { onConfirmation() },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text("Confirm")
+                    }
+                }
+
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ThirdPhaseReportCasesPreview(){
-    ThirdPhaseReportCases()
+//    ThirdPhaseReportCases()
+ConfirmationCart(
+    onDismissRequest = { /*TODO*/ },
+    onConfirmation = { /*TODO*/ },
 
+)
 }
