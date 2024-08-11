@@ -225,7 +225,7 @@ fun SecondPhaseReportCases() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        ActionButtons(redColorUse)
+        ActionButtonInSecondPhase(redColorUse)
     }
 }
 @Composable
@@ -406,7 +406,7 @@ fun DisabilityStatusSelection(
 }
 
 @Composable
-fun ActionButtons(redColorUse: Color) {
+fun ActionButtonInSecondPhase(redColorUse: Color) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
