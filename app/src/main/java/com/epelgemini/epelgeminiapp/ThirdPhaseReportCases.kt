@@ -415,7 +415,6 @@ fun ConfirmationCart(
                         Text("Confirm")
                     }
                 }
-
             }
         }
     }
