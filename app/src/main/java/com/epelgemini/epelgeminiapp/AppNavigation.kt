@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.epelgemini.core_ui.navigation.Route
 import com.epelgemini.core_ui.navigation.TopLevelDestination
 import com.epelgemini.epelgeminiapp.apps.components.drawer.NavDrawer
 import com.epelgemini.epelgeminiapp.apps.state.AppState
@@ -40,6 +41,9 @@ fun AppNavigation(
 ) {
     val navController = appState.navController
     val scope = rememberCoroutineScope()
+    val topBarTitle = TopLevelDestination.fromRoute(
+        appState.currentDestination?.route
+    )?.title ?: TopLevelDestination.Chat.title
 
     ModalNavigationDrawer(
         drawerState = appState.drawerState,
@@ -76,7 +80,7 @@ fun AppNavigation(
                                             .background(Color.White)
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    androidx.compose.material.Text("Safey", color = Color.White, fontWeight = FontWeight.Bold)
+                                    Text(topBarTitle, color = Color.White, fontWeight = FontWeight.Bold)
                                     Spacer(modifier = Modifier.width(48.dp))
 
                                 }
@@ -144,7 +148,22 @@ private fun NavHostController(
         }
 
         composable(TopLevelDestination.JournalList.name) {
-            Text(text = "Journal List")
+            JournalView(
+                onAddClick = {
+                    navController.navigate(Route.CreateJournal.name)
+                }
+            )
+        }
+
+        composable(Route.CreateJournal.name) {
+            NewJournalEntryView(
+                onBackClicked = {
+                    navController.navigateUp()
+                },
+                onSaveClicked = {
+                    navController.navigateUp()
+                }
+            )
         }
 
         composable(TopLevelDestination.ReportList.name) {

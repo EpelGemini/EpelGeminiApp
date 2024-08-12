@@ -1,9 +1,5 @@
 package com.epelgemini.epelgeminiapp
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.compiler.plugins.kotlin.EmptyFunctionMetrics.composable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,22 +27,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
-
-class NewJournalEntryView : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            NewJournalEntryScreen()
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewJournalEntryScreen(onSaveClicked: () -> Unit) {
-    val navController = rememberNavController()
-
+fun NewJournalEntryView(
+    onBackClicked: () -> Unit,
+    onSaveClicked: () -> Unit
+) {
     var text by remember {
         mutableStateOf("")
     }
@@ -53,22 +41,26 @@ fun NewJournalEntryScreen(onSaveClicked: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Jurnal Baru", color = Color.White, fontWeight = FontWeight.Bold) },
+                title = { Text("Jurnal Baru", color = Color.Black, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle back navigation */ }) {
+                    IconButton(onClick = onBackClicked) {
                         Icon(
+                            modifier = Modifier
+                                .size(32.dp),
                             painter = painterResource(id = R.drawable.ic_back),
                             contentDescription = "Back",
-                            tint = Color.White
+                            tint = Color.Black
                         )
                     }
                 },
                 actions = {
                     IconButton(onClick = onSaveClicked) {
                         Icon(
+                            modifier = Modifier
+                                .size(32.dp),
                             painter = painterResource(id = R.drawable.ic_check),
                             contentDescription = "Save",
-                            tint = Color.White
+                            tint = Color.Black
                         )
                     }
                 },
@@ -127,21 +119,15 @@ fun NewJournalEntryScreen(onSaveClicked: () -> Unit) {
                     .fillMaxWidth()
                     .height(200.dp)
             )
-
-            composable("new_journal_entry") { backStackEntry ->
-                NewJournalEntryScreen(
-                    onSaveClicked = {
-                        // Handle save action
-                        navController.popBackStack() // Navigate back after saving
-                    }
-                )
-            }
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun JournalViewPreview() {
-    NewJournalEntryScreen()
+private fun JournalViewPreview() {
+    NewJournalEntryView(
+        onBackClicked = {  },
+        onSaveClicked = {  }
+    )
 }
