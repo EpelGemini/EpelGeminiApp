@@ -1,10 +1,10 @@
 package com.epelgemini.core_ui.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.DirectionsRun
-import androidx.compose.material.icons.rounded.EditNote
-import androidx.compose.material.icons.rounded.Forum
-import androidx.compose.material.icons.rounded.Summarize
+import androidx.compose.material.icons.automirrored.filled.ListAlt
+import androidx.compose.material.icons.filled.AccessTimeFilled
+import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.SmartToy
 import androidx.compose.ui.graphics.vector.ImageVector
 
 enum class TopLevelDestination(
@@ -12,19 +12,19 @@ enum class TopLevelDestination(
     val title: String
 ) {
     Chat(
-        icon = Icons.Rounded.Forum,
+        icon = Icons.Rounded.SmartToy,
         title = "Safey"
     ),
     ReportList(
-        icon = Icons.Rounded.Summarize,
+        icon = Icons.Filled.AccessTimeFilled,
         title = "Report List"
     ),
     JournalList(
-        icon = Icons.Rounded.EditNote,
+        icon = Icons.Rounded.Description,
         title = "Emotion Journal"
     ),
     Activities(
-        icon = Icons.AutoMirrored.Rounded.DirectionsRun,
+        icon = Icons.AutoMirrored.Filled.ListAlt,
         title = "Activities"
     );
 

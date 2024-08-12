@@ -54,6 +54,12 @@ dependencies {
 
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 
+//    implementation ("com.google.accompanist:accompanist-permissions:0.28.0")
+//    implementation ("com.google.accompanist:accompanist-picker:0.28.0")
+
+    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
     implementation(Compose.compiler)
     implementation(Compose.ui)
     implementation(Compose.uiToolingPreview)
