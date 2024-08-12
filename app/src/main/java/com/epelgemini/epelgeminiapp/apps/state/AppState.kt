@@ -36,7 +36,7 @@ class AppState(
             TopLevelDestination.Chat.name -> true
             TopLevelDestination.ReportList.name -> true
             TopLevelDestination.JournalList.name -> true
-            TopLevelDestination.Activities.name -> true
+            //TopLevelDestination.Activities.name -> true
             else -> false
         }
 }

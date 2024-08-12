@@ -22,11 +22,11 @@ enum class TopLevelDestination(
     JournalList(
         icon = Icons.Rounded.Description,
         title = "Emotion Journal"
-    ),
-    Activities(
-        icon = Icons.AutoMirrored.Filled.ListAlt,
-        title = "Activities"
     );
+//    Activities(
+//        icon = Icons.AutoMirrored.Filled.ListAlt,
+//        title = "Activities"
+//    );
 
     companion object{
         fun fromRoute(route: String?): TopLevelDestination? =
@@ -34,7 +34,7 @@ enum class TopLevelDestination(
                 Chat.name -> Chat
                 ReportList.name -> ReportList
                 JournalList.name -> JournalList
-                Activities.name -> Activities
+                //Activities.name -> Activities
                 else -> null
             }
     }
