@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -138,13 +139,17 @@ private fun NavHostController(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
+    val chatVM: ChatViewModel = hiltViewModel()
+
     NavHost(
         navController = navController,
         startDestination = TopLevelDestination.Chat.name,
         modifier = modifier
     ) {
         composable(TopLevelDestination.Chat.name) {
-            ChatView()
+            ChatView(
+                viewModel = chatVM
+            )
         }
 
         composable(TopLevelDestination.JournalList.name) {

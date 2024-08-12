@@ -212,7 +212,7 @@ class ChatViewModel @Inject constructor(
 }
 
 @Composable
-fun ChatView(viewModel: ChatViewModel = hiltViewModel()) {
+fun ChatView(viewModel: ChatViewModel) {
     val messages by viewModel.messages.collectAsState()
     val isGenerating by viewModel.isGenerating.collectAsState()
     val listState = rememberLazyListState()
@@ -499,8 +499,8 @@ fun keyboardAsState(): State<Boolean> {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ChatViewPreview() {
-    ChatView()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun ChatViewPreview() {
+//    ChatView()
+//}
