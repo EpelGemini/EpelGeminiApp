@@ -51,6 +51,15 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+
+//    implementation ("com.google.accompanist:accompanist-permissions:0.28.0")
+//    implementation ("com.google.accompanist:accompanist-picker:0.28.0")
+
+    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
     implementation(Compose.compiler)
     implementation(Compose.ui)
     implementation(Compose.uiToolingPreview)
@@ -100,6 +109,8 @@ dependencies {
     implementation(Google.playServicesMaps)
     implementation(Google.playServicesLocation)
 
+    implementation(Serialization.serialization)
+
     implementation(Ktor.ktorClientCore)
     implementation(Ktor.ktorClientAndroid)
     implementation(Ktor.ktorSerialization)
@@ -123,6 +134,12 @@ dependencies {
 
     implementation(project(Modules.core))
     implementation(project(Modules.coreUi))
+    implementation(project(Modules.journalData))
+    implementation(project(Modules.journalDomain))
+    implementation(project(Modules.journalPresentation))
+    implementation(project(Modules.reportData))
+    implementation(project(Modules.reportDomain))
+    implementation(project(Modules.reportPresentation))
 
     testImplementation(Testing.junit4)
     testImplementation(Testing.junitAndroidExt)
