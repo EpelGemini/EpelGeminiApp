@@ -17,6 +17,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 
 class JournalView : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +32,8 @@ class JournalView : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyApp() {
+    val navController = rememberNavController()
+
     MaterialTheme {
         Scaffold(
             topBar = {
@@ -51,7 +55,9 @@ fun MyApp() {
                 )
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = { /* Handle click */ },
+                FloatingActionButton(onClick = {
+                    navController.navigate("new_journal_entry")
+                },
                     containerColor = Color(0xFFEE6B66),
                     shape = CircleShape) {
                     Icon(painterResource(id = R.drawable.ic_add), contentDescription = "Add", modifier = Modifier
@@ -61,7 +67,27 @@ fun MyApp() {
                 }
             }
         ) { paddingValues ->
-            Content(paddingValues)
+            Navigation(
+                navController = navController,
+                paddingValues = paddingValues
+            )
+        }
+    }
+}
+
+@Composable
+fun Navigation(navController: NavHostController, paddingValues: PaddingValues) {
+    NavHost(navController = navController, startDestination = "main_screen") {
+        composable("main_screen") {
+            Content(paddingValues = paddingValues)
+        }
+        composable("new_journal_entry") {
+            NewJournalEntryScreen(
+                onSaveClicked = {
+                    // Handle save action
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
@@ -103,88 +129,6 @@ fun Content(paddingValues: PaddingValues) {
         )
     }
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun NewJournalEntryScreen(onSaveClicked: () -> Unit) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Jurnal Baru", color = Color.White, fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = { /* Handle back navigation */ }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_back),
-                            contentDescription = "Back",
-                            tint = Color.White
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = onSaveClicked) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_check),
-                            contentDescription = "Save",
-                            tint = Color.White
-                        )
-                    }
-                },
-                backgroundColor = Color(0xFF424FA2)
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "Minggu 4 Agustus",
-                color = Color.Red,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            Text(
-                text = "Bagaimana perasaanmu hari ini?",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            // Emoji reaction row (Placeholder)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                // Add your emojis here
-            }
-
-            Text(
-                text = "Ceritakan pengalamanmu hari ini",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            // Journal entry text field (Placeholder)
-            TextField(
-                value = "",
-                onValueChange = { /* Handle text input */ },
-                placeholder = {
-                    Text("Tuangkanlah isi pikiranmu disini")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            )
-        }
-    }
-}
-
 
 @Preview(showBackground = true)
 @Composable
