@@ -1,6 +1,5 @@
 package com.epelgemini.epelgeminiapp
 
-import android.media.Image
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -26,12 +25,17 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,8 +44,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,8 +54,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ThirdPhaseReportCases(){
+fun ThirdPhaseReportCases(
+    onBackClicked: () -> Unit,
+    onFinish: () -> Unit
+){
     var text by remember { mutableStateOf("") }
     var isChecked by remember { mutableStateOf(false) }
 
@@ -62,101 +68,123 @@ fun ThirdPhaseReportCases(){
     val redLightColorUse = Color(0xFFF2CBC6)
     val scrollState = rememberScrollState()
 
-    Column(
-        modifier = Modifier
-            .verticalScroll(scrollState)
-            .fillMaxSize()
-            .padding(16.dp)
-    ){
-        ProgressBar(3, redColorUse, redLightColorUse)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        SectionHeader(text = "Bukti Informasi", color = redColorUse)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Kronologi Kejadian", fontSize = 16.sp, color = Color.Black)
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        TextField(
-            value = text,
-            onValueChange = { text = it },
-            placeholder = {
-                Text(
-                    text = "Catatlah tanggal dan lokasi kejadian, urutan dan detail peristiwa, serta bentuk kekerasan yang dialami. \n" +
-                            "\n" +
-                            "Kronologi ini akan sangat membantu pihak berwenang dalam memahami situasi dan memastikan tindakan yang tepat dapat diambil. Harap tuliskan dengan jujur dan detail sesuai kemampuanmu, serta ingat bahwa dukungan selalu tersedia untuk kamu.",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(252.dp),
-            textStyle = MaterialTheme.typography.bodyMedium.copy(lineHeight = 24.sp),
-            singleLine = false,
-            maxLines = 15,
-            colors = TextFieldDefaults.colors(
-
-                focusedContainerColor = Color.LightGray,
-                unfocusedContainerColor = Color.LightGray,
-                disabledContainerColor = Color.LightGray,
-                disabledTextColor = Color.Gray
-            )
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text(text = "Bukti Foto (Opsional)", fontSize = 16.sp, color = Color.Black)
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(text = "Kamu bisa menambahkan maksimal 3 foto bukti dari kejadian yang kamu lihat / alami.", fontSize = 13.sp, color = Color.Red)
-
-        // Row function goes here to put image
-        Spacer(modifier = Modifier.height(20.dp))
-
-        ImagePickerRow()
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-
-
-        Text(text = "Bukti Video (Opsional)", fontSize = 16.sp, color = Color.Black)
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(text = "Durasi video maksimal 10 menit.", fontSize = 14.sp, color = Color.Red)
-
-        // Row function goes here to put video
-        Spacer(modifier = Modifier.height(20.dp))
-
-        VideoPickerRow()
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(modifier = Modifier.fillMaxWidth()) {
-            androidx.compose.material3.Checkbox(
-                checked = isChecked,
-                onCheckedChange = { isChecked = it },
-                colors = androidx.compose.material3.CheckboxDefaults.colors(
-                    checkedColor = redColorUse,
-                    uncheckedColor = Color.Gray
-                )
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Saya menyetujui bahwa semua tulisan yang ada di dalam laporan ini adalah nyata dan sesuai dengan kebenarannya",
-                fontSize = 14.sp,
-                color = Color.Black
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Buat Laporan", color = Color.Black, fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = onBackClicked) {
+                        Icon(
+                            modifier = Modifier
+                                .size(32.dp),
+                            painter = painterResource(id = R.drawable.ic_back),
+                            contentDescription = "Back",
+                            tint = Color.Black
+                        )
+                    }
+                },
             )
         }
-        Spacer(modifier = Modifier.height(20.dp))
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .verticalScroll(scrollState)
+                .fillMaxSize()
+                .padding(16.dp)
+                .padding(paddingValues)
+        ){
+            ProgressBar(3, redColorUse, redLightColorUse)
 
-        ActionButtonInThirdPhase(redColorUse, isChecked)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            SectionHeader(text = "Bukti Informasi", color = redColorUse)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(text = "Kronologi Kejadian", fontSize = 16.sp, color = Color.Black)
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                placeholder = {
+                    Text(
+                        text = "Catatlah tanggal dan lokasi kejadian, urutan dan detail peristiwa, serta bentuk kekerasan yang dialami. \n" +
+                                "\n" +
+                                "Kronologi ini akan sangat membantu pihak berwenang dalam memahami situasi dan memastikan tindakan yang tepat dapat diambil. Harap tuliskan dengan jujur dan detail sesuai kemampuanmu, serta ingat bahwa dukungan selalu tersedia untuk kamu.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(252.dp),
+                textStyle = MaterialTheme.typography.bodyMedium.copy(lineHeight = 24.sp),
+                singleLine = false,
+                maxLines = 15,
+                colors = TextFieldDefaults.colors(
+
+                    focusedContainerColor = Color.LightGray,
+                    unfocusedContainerColor = Color.LightGray,
+                    disabledContainerColor = Color.LightGray,
+                    disabledTextColor = Color.Gray
+                )
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(text = "Bukti Foto (Opsional)", fontSize = 16.sp, color = Color.Black)
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(text = "Kamu bisa menambahkan maksimal 3 foto bukti dari kejadian yang kamu lihat / alami.", fontSize = 13.sp, color = Color.Red)
+
+            // Row function goes here to put image
+            Spacer(modifier = Modifier.height(20.dp))
+
+            ImagePickerRow()
+
+            Spacer(modifier = Modifier.height(20.dp))
 
 
+
+            Text(text = "Bukti Video (Opsional)", fontSize = 16.sp, color = Color.Black)
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(text = "Durasi video maksimal 10 menit.", fontSize = 14.sp, color = Color.Red)
+
+            // Row function goes here to put video
+            Spacer(modifier = Modifier.height(20.dp))
+
+            VideoPickerRow()
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                androidx.compose.material3.Checkbox(
+                    checked = isChecked,
+                    onCheckedChange = { isChecked = it },
+                    colors = androidx.compose.material3.CheckboxDefaults.colors(
+                        checkedColor = redColorUse,
+                        uncheckedColor = Color.Gray
+                    )
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Saya menyetujui bahwa semua tulisan yang ada di dalam laporan ini adalah nyata dan sesuai dengan kebenarannya",
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+
+            ActionButtonInThirdPhase(
+                onBackClicked = onBackClicked,
+                onFinish = onFinish,redColorUse, isChecked)
+
+
+        }
     }
 }
 
@@ -322,13 +350,15 @@ fun VideoBox(videoUri: Uri?, onClick: () -> Unit) {
 }
 
 @Composable
-fun ActionButtonInThirdPhase(redColorUse: Color, isChecked: Boolean) {
+fun ActionButtonInThirdPhase(
+    onBackClicked: () -> Unit,
+    onFinish: () -> Unit,redColorUse: Color, isChecked: Boolean) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Button(
-            onClick = { /* Handle next action */ },
+            onClick = onFinish,
             enabled = isChecked, // Enable the button only if the checkbox is checked
             modifier = Modifier
                 .width(380.dp)
@@ -339,7 +369,7 @@ fun ActionButtonInThirdPhase(redColorUse: Color, isChecked: Boolean) {
         }
 
         OutlinedButton(
-            onClick = { /* Handle back action */ },
+            onClick = onBackClicked,
             modifier = Modifier
                 .width(380.dp)
                 .height(48.dp)

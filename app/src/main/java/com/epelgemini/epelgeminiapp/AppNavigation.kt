@@ -167,11 +167,47 @@ private fun NavHostController(
         }
 
         composable(TopLevelDestination.ReportList.name) {
-            ListLaporan(navController = navController)
+            ListLaporan(
+                onAddClick = {
+                    navController.navigate(Route.CreateReportOne.name)
+                }
+            )
         }
 
-        composable("report_case_route") {
-            reportCase()
+        composable(Route.CreateReportOne.name) {
+            FirstPhaseReportCase(
+                onBackClicked = {
+                    navController.navigateUp()
+                },
+                onNext = {
+                    navController.navigate(Route.CreateReportTwo.name)
+                }
+            )
+        }
+
+        composable(Route.CreateReportTwo.name) {
+            SecondPhaseReportCases(
+                onBackClicked = {
+                    navController.navigateUp()
+                },
+                onNext = {
+                    navController.navigate(Route.CreateReportThree.name)
+                }
+            )
+        }
+
+        composable(Route.CreateReportThree.name) {
+            ThirdPhaseReportCases(
+                onBackClicked = {
+                    navController.navigateUp()
+                },
+                onFinish = {
+                    navController.popBackStack(
+                        route = TopLevelDestination.ReportList.name,
+                        inclusive = false
+                    )
+                }
+            )
         }
     }
 }

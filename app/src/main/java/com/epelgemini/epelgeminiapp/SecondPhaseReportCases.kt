@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,7 +22,10 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SecondPhaseReportCases() {
+fun SecondPhaseReportCases(
+    onBackClicked: () -> Unit,
+    onNext: () -> Unit
+) {
 
     var name by remember { mutableStateOf("") }
     var noTelpOrEmail by remember { mutableStateOf("") }
@@ -52,180 +56,202 @@ fun SecondPhaseReportCases() {
     var domisiliTerduga by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
 
-    Column(
-        modifier = Modifier
-            .verticalScroll(scrollState)
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        ProgressBar(2,redColorUse, redLightColorUse)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        SectionHeader(text = "Detail Informasi", color = redColorUse)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Nama Pelapor", fontSize = 16.sp, color = Color.Black)
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        CustomTextField(value = name, onValueChange = { name = it }, label = "Masukkan Nama Pelapor")
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Jenis Kelamin", fontSize = 16.sp, color = Color.Black)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        GenderSelection(selectedOption = {selectedGenderPelapor}, onOptionSelected = { selectedGenderPelapor = it }, redColorUse)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "No. Telepon/Alamat email", fontSize = 16.sp, color = Color.Black)
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        CustomTextField(value = noTelpOrEmail, onValueChange = { noTelpOrEmail = it }, label = "Masukkan No. Telepon/Alamat email")
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Domisili", fontSize = 16.sp, color = Color.Black)
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        ExposedDropdownMenuBox(
-            expanded = expandedPelapor,
-            onExpandedChange = { expandedPelapor = !expandedPelapor }
-        ) {
-            TextField(
-                value = domisili,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Pilih Domisili") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedPelapor) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor(),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.LightGray,
-                    unfocusedContainerColor = Color.LightGray
-                )
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Buat Laporan", color = Color.Black, fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = onBackClicked) {
+                        Icon(
+                            modifier = Modifier
+                                .size(32.dp),
+                            painter = painterResource(id = R.drawable.ic_back),
+                            contentDescription = "Back",
+                            tint = Color.Black
+                        )
+                    }
+                },
             )
-
-            ExposedDropdownMenu(
-                expanded = expandedPelapor,
-                onDismissRequest = { expandedPelapor = false }
-            ) {
-                provinsiList.forEach { provinsi ->
-                    DropdownMenuItem(
-                        text = { Text(provinsi) },
-                        onClick = {
-                            domisili = provinsi
-                            expandedPelapor = false
-                        }
-                    )
-                }
-            }
         }
-
-        Spacer(modifier = Modifier.height(18.dp))
-
-        SectionHeader(text = "Status Disabilitas")
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        DisabilityStatusSelection(
-            isDisabled = isDisabled,
-            onStatusSelected = { status ->
-                isDisabled = status
-                isTextFieldEnabled = status == "Iya"
-                if (status == "Tidak") disabilityExplanation = ""
-            },
-            redColorUse = redColorUse
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        CustomTextField(
-            value = disabilityExplanation,
-            onValueChange = { disabilityExplanation = it },
-            label = "Penjelasan Status Disabilitas",
-            enabled = isTextFieldEnabled
-        )
-
-        Spacer(modifier = Modifier.height(18.dp))
-
-        Box(
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(3.dp)
-                .background(Color.Black)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Nama Pelaku", fontSize = 16.sp, color = Color.Black)
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        CustomTextField(value = namaTerduga, onValueChange = { namaTerduga = it }, label = "Masukkan Nama Terduga Pelaku")
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Jenis Kelamin Pelaku", fontSize = 16.sp, color = Color.Black)
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        GenderSelection(
-            selectedOption = { selectedGenderTerduga },
-            onOptionSelected = { selectedGenderTerduga = it },
-            redColorUse = redColorUse
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Domisili Terduga Pelaku", fontSize = 16.sp, color = Color.Black)
-
-        Spacer(modifier = Modifier.height(8.dp))
-        ExposedDropdownMenuBox(
-            expanded = expandedTerduga,
-            onExpandedChange = { expandedTerduga = !expandedTerduga }
+                .verticalScroll(scrollState)
+                .fillMaxSize()
+                .padding(16.dp)
+                .padding(paddingValues)
         ) {
-            TextField(
-                value = domisiliTerduga,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Pilih Domisili Terduga") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTerduga) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor(),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.LightGray,
-                    unfocusedContainerColor = Color.LightGray
-                )
-            )
+            ProgressBar(2,redColorUse, redLightColorUse)
 
-            ExposedDropdownMenu(
-                expanded = expandedTerduga,
-                onDismissRequest = { expandedTerduga = false }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            SectionHeader(text = "Detail Informasi", color = redColorUse)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(text = "Nama Pelapor", fontSize = 16.sp, color = Color.Black)
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            CustomTextField(value = name, onValueChange = { name = it }, label = "Masukkan Nama Pelapor")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(text = "Jenis Kelamin", fontSize = 16.sp, color = Color.Black)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            GenderSelection(selectedOption = {selectedGenderPelapor}, onOptionSelected = { selectedGenderPelapor = it }, redColorUse)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(text = "No. Telepon/Alamat email", fontSize = 16.sp, color = Color.Black)
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            CustomTextField(value = noTelpOrEmail, onValueChange = { noTelpOrEmail = it }, label = "Masukkan No. Telepon/Alamat email")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(text = "Domisili", fontSize = 16.sp, color = Color.Black)
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            ExposedDropdownMenuBox(
+                expanded = expandedPelapor,
+                onExpandedChange = { expandedPelapor = !expandedPelapor }
             ) {
-                provinsiList.forEach { provinsi ->
-                    DropdownMenuItem(
-                        text = { Text(provinsi) },
-                        onClick = {
-                            domisiliTerduga = provinsi
-                            expandedTerduga = false
-                        }
+                TextField(
+                    value = domisili,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Pilih Domisili") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedPelapor) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.LightGray,
+                        unfocusedContainerColor = Color.LightGray
                     )
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expandedPelapor,
+                    onDismissRequest = { expandedPelapor = false }
+                ) {
+                    provinsiList.forEach { provinsi ->
+                        DropdownMenuItem(
+                            text = { Text(provinsi) },
+                            onClick = {
+                                domisili = provinsi
+                                expandedPelapor = false
+                            }
+                        )
+                    }
                 }
             }
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            SectionHeader(text = "Status Disabilitas")
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            DisabilityStatusSelection(
+                isDisabled = isDisabled,
+                onStatusSelected = { status ->
+                    isDisabled = status
+                    isTextFieldEnabled = status == "Iya"
+                    if (status == "Tidak") disabilityExplanation = ""
+                },
+                redColorUse = redColorUse
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            CustomTextField(
+                value = disabilityExplanation,
+                onValueChange = { disabilityExplanation = it },
+                label = "Penjelasan Status Disabilitas",
+                enabled = isTextFieldEnabled
+            )
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(3.dp)
+                    .background(Color.Black)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(text = "Nama Pelaku", fontSize = 16.sp, color = Color.Black)
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            CustomTextField(value = namaTerduga, onValueChange = { namaTerduga = it }, label = "Masukkan Nama Terduga Pelaku")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(text = "Jenis Kelamin Pelaku", fontSize = 16.sp, color = Color.Black)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            GenderSelection(
+                selectedOption = { selectedGenderTerduga },
+                onOptionSelected = { selectedGenderTerduga = it },
+                redColorUse = redColorUse
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(text = "Domisili Terduga Pelaku", fontSize = 16.sp, color = Color.Black)
+
+            Spacer(modifier = Modifier.height(8.dp))
+            ExposedDropdownMenuBox(
+                expanded = expandedTerduga,
+                onExpandedChange = { expandedTerduga = !expandedTerduga }
+            ) {
+                TextField(
+                    value = domisiliTerduga,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Pilih Domisili Terduga") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTerduga) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.LightGray,
+                        unfocusedContainerColor = Color.LightGray
+                    )
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expandedTerduga,
+                    onDismissRequest = { expandedTerduga = false }
+                ) {
+                    provinsiList.forEach { provinsi ->
+                        DropdownMenuItem(
+                            text = { Text(provinsi) },
+                            onClick = {
+                                domisiliTerduga = provinsi
+                                expandedTerduga = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ActionButtonInSecondPhase(
+                onBackClicked = onBackClicked,
+                onNext = onNext, redColorUse)
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        ActionButtonInSecondPhase(redColorUse)
     }
 }
 @Composable
@@ -406,14 +432,18 @@ fun DisabilityStatusSelection(
 }
 
 @Composable
-fun ActionButtonInSecondPhase(redColorUse: Color) {
+fun ActionButtonInSecondPhase(
+    onBackClicked: () -> Unit,
+    onNext: () -> Unit,
+    redColorUse: Color
+) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
         Button(
-            onClick = { /* Handle next action */ },
+            onClick = onNext,
             modifier = Modifier
                 .width(380.dp)
                 .height(48.dp),
@@ -423,9 +453,7 @@ fun ActionButtonInSecondPhase(redColorUse: Color) {
         }
 
         OutlinedButton(
-            onClick = {
-
-            },
+            onClick = onBackClicked,
             modifier = Modifier
                 .width(380.dp)
                 .height(48.dp)
@@ -439,5 +467,12 @@ fun ActionButtonInSecondPhase(redColorUse: Color) {
 @Preview(showBackground = true)
 @Composable
 fun SecondPhaseReportCasesPreview() {
-    SecondPhaseReportCases()
+    SecondPhaseReportCases(
+        onBackClicked = {
+
+        },
+        onNext = {
+
+        }
+    )
 }
