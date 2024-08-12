@@ -1,10 +1,10 @@
 package com.epelgemini.epelgeminiapp
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,13 +39,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-enum class ReportType(val id: Int, val title: String) {
-    BULLYING(1, "Pembulian"),
-    HARASSMENT(2, "Pelecehan"),
-    THEFT(3, "Pencurian"),
-    VANDALISM(4, "Vandalisme"),
-    FRAUD(5, "Penipuan"),
-    ABUSE(6, "Penganiayaan")
+enum class ReportType(
+    val id: Int,
+    val title: String,
+    @DrawableRes val imgResId: Int
+) {
+    BULLYING(1, "Pemerkosaan", R.drawable.rape),
+    HARASSMENT(2, "Kekerasan Fisik", R.drawable.physical_abuse),
+    THEFT(3, "Pelecehan Seksual", R.drawable.sexual_harassement),
+    VANDALISM(4, "Bullying", R.drawable.bullying),
+    FRAUD(5, "Pemaksaan Seksual", R.drawable.sexual_coercien),
+    ABUSE(6, "Lainnya", R.drawable.etc)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -156,13 +160,11 @@ fun ReportCardType(reportType: ReportType, isSelected: Boolean, onClick: () -> U
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-            Box(
+            Image(
                 modifier = Modifier
-                    .size(64.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(8.dp)
-                    )
+                    .size(64.dp),
+                painter = painterResource(id = reportType.imgResId),
+                contentDescription = "${reportType.title}'s illustration"
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -25,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,14 +53,14 @@ fun ListLaporan(
             }
         }
     ) { paddingValues ->
-//        EmptyContent(paddingValues)
+        EmptyContent(paddingValues)
 
-        LazyColumn(
-            contentPadding = paddingValues
-        ) {
-            item { Item1(paddingValues) }
-            item { Item2(paddingValues) }
-        }
+//        LazyColumn(
+//            contentPadding = paddingValues
+//        ) {
+//            item { Item1(paddingValues) }
+//            item { Item2(paddingValues) }
+//        }
 
     }
 }
@@ -78,7 +78,7 @@ fun EmptyContent(paddingValues: PaddingValues) {
         Icon(
             imageVector = Icons.Filled.Warning,
             contentDescription = "Warning",
-            tint = Color.Red,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(48.dp)
         )
         Text(

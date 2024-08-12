@@ -53,10 +53,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.epelgemini.journal_domain.use_cases.JournalUseCases
@@ -76,10 +74,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
 fun getGeminiKey(): String {
     val encodedKey = "QUl6YVN5Q2lFYzJNTmw3ZUE1ZVRTNVlqSzd6aEhVaTE2YVRJY3RV"
@@ -284,7 +282,7 @@ fun ChatTopAppBar() {
                             .background(Color.White)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Safey", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text("HearU", color = Color.White, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.width(48.dp))
 
                 }
@@ -427,7 +425,7 @@ fun TypingIndicator() {
         modifier = Modifier.padding(vertical = 4.dp)
     ) {
         Text(
-            text = "Safey AI is typing" + ".".repeat(dotsCount),
+            text = "HearU AI is typing" + ".".repeat(dotsCount),
             modifier = Modifier.padding(12.dp),
             color = TextPrimary,
             fontSize = 16.sp

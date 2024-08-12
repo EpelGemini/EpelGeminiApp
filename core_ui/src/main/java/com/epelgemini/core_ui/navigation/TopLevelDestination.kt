@@ -1,7 +1,6 @@
 package com.epelgemini.core_ui.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.AccessTimeFilled
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.SmartToy
@@ -13,7 +12,7 @@ enum class TopLevelDestination(
 ) {
     Chat(
         icon = Icons.Rounded.SmartToy,
-        title = "Safey"
+        title = "HearU"
     ),
     ReportList(
         icon = Icons.Filled.AccessTimeFilled,
